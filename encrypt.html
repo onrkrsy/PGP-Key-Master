@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File & Text Encryption</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>    <!-- Navbar Başlangıcı -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">PGPTool</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pgpNavbar" aria-controls="pgpNavbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="pgpNavbar">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="index.html">Anahtar Üretme</a>
+            </li>
+            <li class="nav-item ">
+              <a class="nav-link active" href="encrypt.html">Şifreleme</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="decrypt.html">Şifre Çözme</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-5">
+        <h1 class="text-center">Encrypt File or Text</h1>
+
+        <div class="mb-3">
+            <label for="publicKey" class="form-label">Enter Public Key:</label>
+            <textarea id="publicKey" class="form-control" rows="6" placeholder="Paste public key here..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="textToEncrypt" class="form-label">Text to Encrypt:</label>
+            <textarea id="textToEncrypt" class="form-control" rows="4" placeholder="Enter text to encrypt..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="fileInput" class="form-label">Select File to Encrypt:</label>
+            <input type="file" id="fileInput" class="form-control">
+        </div>
+
+        <button id="encryptTextButton" class="btn btn-primary w-100">Encrypt Text</button>
+        <button id="encryptFileButton" class="btn btn-secondary w-100 mt-2">Encrypt File</button>
+
+        <div class="mt-3">
+            <h3>Encrypted Output:</h3>
+            <textarea id="encryptedOutput" class="form-control" rows="6" readonly></textarea>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.10.10/openpgp.min.js"></script>
+    <script>
+        document.getElementById('encryptTextButton').addEventListener('click', async () => {
+            const publicKeyArmored = document.getElementById('publicKey').value;
+            const textToEncrypt = document.getElementById('textToEncrypt').value;
+
+            const publicKey = await openpgp.key.readArmored(publicKeyArmored);
+            const encrypted = await openpgp.encrypt({
+                message: openpgp.message.fromText(textToEncrypt),
+                publicKeys: publicKey.keys
+            });
+
+            document.getElementById('encryptedOutput').value = encrypted.data;
+        });
+
+        document.getElementById('encryptFileButton').addEventListener('click', async () => {
+            const publicKeyArmored = document.getElementById('publicKey').value;
+            const file = document.getElementById('fileInput').files[0];
+
+            if (!file) {
+                alert('Please select a file!');
+                return;
+            }
+
+            const publicKey = await openpgp.key.readArmored(publicKeyArmored);
+            const fileContent = await file.text();
+            const encrypted = await openpgp.encrypt({
+                message: openpgp.message.fromText(fileContent),
+                publicKeys: publicKey.keys
+            });
+
+            const blob = new Blob([encrypted.data], { type: 'application/pgp-encrypted' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = file.name + '.pgp';
+            link.click();
+        });
+    </script>
+</body>
+</html>

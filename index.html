@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Generation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>  
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">PGPTool</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pgpNavbar" aria-controls="pgpNavbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="pgpNavbar">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html">Anahtar Üretme</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="encrypt.html">Şifreleme</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="decrypt.html">Şifre Çözme</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-5">
+        <h1 class="text-center">Generate PGP Keys</h1>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" id="name" class="form-control" placeholder="Enter your name">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email">
+        </div>
+        <div class="mb-3">
+            <label for="passphrase" class="form-label">Passphrase:</label>
+            <input type="password" id="passphrase" class="form-control" placeholder="Enter a passphrase">
+        </div>
+		  <div class="mb-3">
+            <label for="keySize" class="form-label">Key Size:</label>
+            <select id="keySize" class="form-select">
+			   <option value="1024">1024 bits(good for test)</option>
+               <option value="2048">2048 bits (secure)</option>
+               <option value="4096">4096 bits (more secure)</option>  
+            </select>
+        </div>
+        <button id="generateKey" class="btn btn-primary w-100">Generate Keys</button>
+        <div class="mt-3">
+            <h3>Public Key:</h3>
+            <textarea id="publicKeyOutput" class="form-control" rows="6" readonly></textarea>
+        </div>
+        <div class="mt-3">
+            <h3>Private Key:</h3>
+            <textarea id="privateKeyOutput" class="form-control" rows="6" readonly></textarea>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/4.10.10/openpgp.min.js"></script>
+    <script>
+        document.getElementById('generateKey').addEventListener('click', async () => {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const passphrase = document.getElementById('passphrase').value;
+
+            const { privateKeyArmored, publicKeyArmored } = await openpgp.generateKey({
+                userIds: [{ name, email }],
+                curve: 'ed25519',
+				rsaBits: parseInt(keySize), // Key size seçimi
+                passphrase,
+				version: 'PgpTool',  // Version özelleştirildi
+				comment: 'Client Side Custom Tool'   // Comment özelleştirildi
+            });
+
+            document.getElementById('publicKeyOutput').value = publicKeyArmored;
+            document.getElementById('privateKeyOutput').value = privateKeyArmored;
+        });
+    </script>
+</body>
+</html>

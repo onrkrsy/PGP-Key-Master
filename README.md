@@ -7,11 +7,14 @@ PGP KeyMaster, HTML, JavaScript ve Bootstrap ile geliştirilmiş, kullanıcılar
 - **Metin ve Dosya Şifreleme**: Oluşturulan public key ile metin veya dosya şifreleme.
 - **Metin ve Dosya Şifre Çözme**: İlgili private key ile şifrelenmiş metin veya dosyanın şifresini çözme.
 
+## Kurulum
+- Dosyaları indirip index.html dosyasını bir tarayıcı ile açarak çlıştırabilirsiniz
+
+  
 ## Kullanım
 1. Anahtar oluşturmak için uygulamanın "Key Generation" sayfasına gidin ve istenen bilgileri girin.
 2. Public key'i kullanarak dosya veya metin şifrelemek için "Encrypt" sayfasını kullanın.
 3. Private key ve passphrase ile şifrelenmiş dosya veya metinleri çözmek için "Decrypt" sayfasına gidin.
 
-## Gereksinimler
-- localde bir tarayıcı yeterlidir
+
  
